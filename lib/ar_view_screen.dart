@@ -1,14 +1,13 @@
-import 'package:ar_flutter_plugin_updated/managers/ar_anchor_manager.dart';
-import 'package:ar_flutter_plugin_updated/managers/ar_location_manager.dart';
-import 'package:flutter/material.dart';
+import 'dart:async';
+import 'dart:math';
 import 'package:ar_flutter_plugin_updated/ar_flutter_plugin.dart';
 import 'package:ar_flutter_plugin_updated/datatypes/node_types.dart';
 import 'package:ar_flutter_plugin_updated/managers/ar_object_manager.dart';
 import 'package:ar_flutter_plugin_updated/managers/ar_session_manager.dart';
 import 'package:ar_flutter_plugin_updated/models/ar_node.dart';
+import 'package:audioplayers/audioplayers.dart';
+import 'package:flutter/material.dart';
 import 'package:vector_math/vector_math_64.dart' as vector;
-import 'dart:async';
-import 'dart:math';
 
 class ARViewScreen extends StatefulWidget {
   const ARViewScreen({super.key});
@@ -20,19 +19,19 @@ class ARViewScreen extends StatefulWidget {
 class _ARViewScreenState extends State<ARViewScreen> {
   late ARSessionManager arSessionManager;
   late ARObjectManager arObjectManager;
-  ARNode? myCharacter;
+  final player = AudioPlayer();
+  ARNode? currentCharacter;
   int points = 0;
-  Timer? proximityTimer;
-  Timer? characterTimer;
 
-  final List<String> charactersUrls = [
+  final List<String> characters = [
+    "https://raw.githubusercontent.com/Reem-hossam/ar__project/main/assets/models/round_robot.glb",
     "https://raw.githubusercontent.com/Reem-hossam/ar__project/main/assets/models/robot.glb",
+    "https://raw.githubusercontent.com/Reem-hossam/ar__project/main/assets/models/cute_spider_robot.glb",
+    "https://raw.githubusercontent.com/Reem-hossam/ar__project/main/assets/models/little_cute_robot.glb",
   ];
 
   @override
   void dispose() {
-    proximityTimer?.cancel();
-    characterTimer?.cancel();
     arSessionManager.dispose();
     super.dispose();
   }
@@ -43,9 +42,7 @@ class _ARViewScreenState extends State<ARViewScreen> {
       appBar: AppBar(title: const Text("AR")),
       body: Stack(
         children: [
-          ARView(
-            onARViewCreated: onARViewCreated,
-          ),
+          ARView(onARViewCreated: onARViewCreated),
           Positioned(
             top: 20,
             right: 20,
@@ -69,85 +66,84 @@ class _ARViewScreenState extends State<ARViewScreen> {
   void onARViewCreated(
       ARSessionManager sessionManager,
       ARObjectManager objectManager,
-      ARAnchorManager _,
-      ARLocationManager __,
-      ) async {
+      _,
+      __) async {
     arSessionManager = sessionManager;
     arObjectManager = objectManager;
 
     await arSessionManager.onInitialize(
-      showFeaturePoints: false,
       showPlanes: true,
-      customPlaneTexturePath: "Triangle.png",
-      showWorldOrigin: true,
+      handleTaps: false,
+      showFeaturePoints: false,
     );
-
     await arObjectManager.onInitialize();
 
-    await spawnRandomCharacter();
-
-    proximityTimer = Timer.periodic(const Duration(seconds: 1), (_) {
-      checkProximity();
-    });
-
-    characterTimer = Timer.periodic(const Duration(seconds: 10), (_) {
-      spawnRandomCharacter();
-    });
+    spawnCharacter();
   }
 
-  Future<void> spawnRandomCharacter() async {
-    if (myCharacter != null) {
-      await arObjectManager.removeNode(myCharacter!);
+  Future<void> spawnCharacter() async {
+    if (currentCharacter != null) {
+      await arObjectManager.removeNode(currentCharacter!);
+      currentCharacter = null;
     }
 
-    final randomUrl = (charactersUrls..shuffle()).first;
-
-    myCharacter = ARNode(
-      type: NodeType.webGLB,
-      uri: randomUrl,
-      scale: vector.Vector3(0.5, 0.5, 0.5),
-      position: vector.Vector3(
-        Random().nextDouble() * 2 - 1,
-        0.0,
-        -(1.5 + Random().nextDouble()),
-      ),
-      rotation: vector.Vector4(1.0, 0.0, 0.0, 0.0),
+    final url = (characters..shuffle()).first;
+    final position = vector.Vector3(
+      Random().nextDouble() * 2 - 1,
+      0.0,
+      -(1.5 + Random().nextDouble()),
     );
 
-    await arObjectManager.addNode(myCharacter!);
-  }
+    final newNode = ARNode(
+      type: NodeType.webGLB,
+      uri: url,
+      scale: vector.Vector3.all(0.4),
+      position: position,
+      rotation: vector.Vector4(0, 1, 0, pi),
+    );
 
-  void checkProximity() async {
-    if (myCharacter?.position == null) return;
-
-    try {
-      var camMatrix = await arSessionManager.getCameraPose();
-
-      if (camMatrix == null) return;
-
-      final camPosition = vector.Vector3(
-        camMatrix.entry(0, 3),
-        camMatrix.entry(1, 3),
-        camMatrix.entry(2, 3),
-      );
-
-      final characterPos = myCharacter!.position!;
-
-      final distance = camPosition.distanceTo(characterPos);
-
-      if (distance < 1.0) {
-        setState(() {
-          points++;
-        });
-        await spawnRandomCharacter();
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("📍new point")),
-        );
-
-      }
-    } catch (e) {
-      debugPrint("💥 Error in proximity: $e");
+    final success = await arObjectManager.addNode(newNode);
+    if (success == true) {
+      currentCharacter = newNode;
+      monitorProximity();
     }
   }
 
+  void monitorProximity() async {
+    while (currentCharacter != null) {
+      try {
+        await Future.delayed(const Duration(milliseconds: 500));
+
+        final matrix = await arSessionManager.getCameraPose();
+        if (matrix == null) return;
+
+        final camPosition = vector.Vector3(
+          matrix.entry(0, 3),
+          matrix.entry(1, 3),
+          matrix.entry(2, 3),
+        );
+
+        final charPos = currentCharacter!.position;
+        if (charPos == null) return;
+
+        final distance = camPosition.distanceTo(charPos);
+
+        if (distance < 1.0) {
+          setState(() => points++);
+
+          await player.play(AssetSource('sounds/mixkit-achievement-bell-600.wav'));
+
+          await arObjectManager.removeNode(currentCharacter!);
+          currentCharacter = null;
+
+          Future.delayed(const Duration(seconds: 1), () {
+            if (mounted) spawnCharacter();
+          });
+          break;
+        }
+      } catch (e) {
+        debugPrint("❌ Error in proximity loop: $e");
+      }
+    }
+  }
 }

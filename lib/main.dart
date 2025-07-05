@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
-
-import 'ar_view_screen.dart';
-
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'core/utils/app_theme.dart';
+import 'presentation/screens/home/home_screen.dart';
+import 'presentation/screens/splash/splash_screen.dart';
+import 'presentation/screens/signup/sign_up_screen.dart';
+import 'presentation/screens/about/about_us_screen.dart';
 
 void main() {
   runApp(const ARGameApp());
@@ -12,44 +15,18 @@ class ARGameApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'AR Game',
-      theme: ThemeData(
-        primarySwatch: Colors.deepPurple,
-      ),
-      home: const SplashScreen(),
-    );
-  }
-}
-
-class SplashScreen extends StatelessWidget {
-  const SplashScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Text(
-              'AR Game',
-              style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const ARViewScreen()),
-                );
-              },
-              child: const Text('Start Game'),
-            ),
-          ],
-        ),
+    return ScreenUtilInit(
+      designSize: const Size(360, 690),
+      builder: (_, __) => MaterialApp(
+        debugShowCheckedModeBanner: false,
+        theme: AppTheme.lightTheme,
+        initialRoute: SplashScreen.routeName,
+        routes: {
+          HomeScreen.routeName: (context) => const HomeScreen(),
+          SignUpScreen.routeName: (context) => const SignUpScreen(),
+          AboutUsScreen.routeName: (context) => const AboutUsScreen(),
+          SplashScreen.routeName: (context) => const SplashScreen(),
+        },
       ),
     );
   }

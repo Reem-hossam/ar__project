@@ -36,6 +36,10 @@ dependencies:
   ar_flutter_plugin_updated: ^0.0.1
   vector_math: ^2.1.4
   audioplayers: ^5.2.1
+  flutter_screenutil: ^5.9.0
+  flutter_native_splash: ^2.3.1
+  http: ^0.13.6
+
 
 
   # The following adds the Cupertino Icons font to your application.
@@ -68,6 +72,14 @@ flutter:
   # To add assets to your application, add an assets section, like this:
   assets:
     - assets/sounds/mixkit-achievement-bell-600.wav
+    - assets/images/crown.png
+    - assets/images/lines.png
+    - assets/images/user_icon1.png
+    - assets/images/user_icon2.png
+    - assets/images/job.png
+    - assets/images/person.png
+    - assets/images/company.png
+
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see
@@ -95,3 +107,14 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/to/font-from-package
+
+flutter_native_splash:
+  color: "#01379C"
+ # image: assets/images/crown.png
+
+  android_12:
+
+   # image: assets/images/crown.png
+
+
+    color: "#01379C"

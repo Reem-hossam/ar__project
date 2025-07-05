@@ -26,7 +26,6 @@ class _ARViewScreenState extends State<ARViewScreen> {
   final List<String> characters = [
     "https://raw.githubusercontent.com/Reem-hossam/ar__project/main/assets/models/round_robot.glb",
     "https://raw.githubusercontent.com/Reem-hossam/ar__project/main/assets/models/robot.glb",
-    "https://raw.githubusercontent.com/Reem-hossam/ar__project/main/assets/models/cute_spider_robot.glb",
     "https://raw.githubusercontent.com/Reem-hossam/ar__project/main/assets/models/little_cute_robot.glb",
   ];
 
@@ -39,22 +38,46 @@ class _ARViewScreenState extends State<ARViewScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("AR")),
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+      ),
+      extendBodyBehindAppBar: true,
       body: Stack(
         children: [
           ARView(onARViewCreated: onARViewCreated),
           Positioned(
-            top: 20,
-            right: 20,
+            top: 70,
+            left: 20,
             child: Container(
-              padding: const EdgeInsets.all(12),
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
               decoration: BoxDecoration(
-                color: Colors.black.withOpacity(0.6),
-                borderRadius: BorderRadius.circular(12),
+
+                gradient: LinearGradient(
+                  colors: [
+                    const Color(0xFFDB2653),
+                    const Color(0xFFE91E63).withOpacity(0.8),
+                  ],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+                borderRadius: BorderRadius.circular(15),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.3),
+                    spreadRadius: 2,
+                    blurRadius: 5,
+                    offset: const Offset(0, 3),
+                  ),
+                ],
               ),
               child: Text(
                 "Score: $points",
-                style: const TextStyle(color: Colors.white, fontSize: 18),
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
           ),

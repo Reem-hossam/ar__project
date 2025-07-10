@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import '../../../data/services/user_local_service.dart';
 import '../home/home_screen.dart';
+import '../signup/sign_up_screen.dart';
 
 class SplashScreen extends StatefulWidget {
   static const String routeName = "SplashScreen";
@@ -37,8 +39,16 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
 
     _controller.forward();
 
-    Future.delayed(const Duration(seconds: 3), () {
-      Navigator.pushReplacementNamed(context, HomeScreen.routeName);
+    Future.delayed(const Duration(seconds: 3), () async {
+      final existingUser = await UserLocalService.getActiveUser();
+
+      if (context.mounted) {
+        if (existingUser != null) {
+          Navigator.pushReplacementNamed(context, HomeScreen.routeName);
+        } else {
+          Navigator.pushReplacementNamed(context, SignUpScreen.routeName);
+        }
+      }
     });
   }
 

@@ -85,7 +85,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                         Navigator.pushNamed(context, SignUpScreen.routeName);
                       },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: theme.colorScheme.secondary, // ← استخدمنا لون من الثيم
+                        backgroundColor: theme.colorScheme.secondary,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(30.0.r),
                         ),

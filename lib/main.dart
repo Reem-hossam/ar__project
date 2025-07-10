@@ -1,18 +1,29 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'core/db.dart';
 import 'core/utils/app_theme.dart';
+import 'data/services/api_service.dart';
+import 'presentation/screens/signup/sign_up_screen.dart';
 import 'presentation/screens/home/home_screen.dart';
 import 'presentation/screens/splash/splash_screen.dart';
-import 'presentation/screens/signup/sign_up_screen.dart';
 import 'presentation/screens/about/about_us_screen.dart';
 
-void main() {
+void main() async{
+  WidgetsFlutterBinding.ensureInitialized();
+  await DB.init();
+  await ApiService.syncPendingUsers();
+  await ApiService.syncPendingPoints();
   runApp(const ARGameApp());
 }
 
-class ARGameApp extends StatelessWidget {
+class ARGameApp extends StatefulWidget {
   const ARGameApp({super.key});
 
+  @override
+  State<ARGameApp> createState() => _ARGameAppState();
+}
+
+class _ARGameAppState extends State<ARGameApp> {
   @override
   Widget build(BuildContext context) {
     return ScreenUtilInit(

@@ -8,7 +8,11 @@ import 'package:ar_flutter_plugin_updated/models/ar_node.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:isar/isar.dart';
 import 'package:vector_math/vector_math_64.dart' as vector;
+import 'core/db.dart';
+import 'data/models/user.dart';
+import 'data/services/api_service.dart';
 
 class ARViewScreen extends StatefulWidget {
   const ARViewScreen({super.key});
@@ -25,12 +29,36 @@ class _ARViewScreenState extends State<ARViewScreen> {
   int points = 0;
   bool isSpawning = false;
   bool showBravo = false;
-
+  int remainingTime = 60;
+  Timer? countdownTimer;
+  User? _currentUser;
   final String characterUrl = "https://raw.githubusercontent.com/Reem-hossam/ar__project/main/assets/models/robot.glb";
+
+  @override
+  void initState() {
+    super.initState();
+    _loadCurrentUserAndPoints();
+  }
+
+  Future<void> _loadCurrentUserAndPoints() async {
+    final allUsers = await DB.isar.users.where().findAll();
+    allUsers.sort((a, b) => b.id.compareTo(a.id));
+    final lastUser = allUsers.isNotEmpty ? allUsers.first : null;
+    if (lastUser != null) {
+      setState(() {
+        _currentUser = lastUser;
+        points = _currentUser!.points;
+        print('Loaded user: ${_currentUser!.username} with points: ${points}');
+      });
+    } else {
+      print('No user found in local database.');
+    }
+  }
 
   @override
   void dispose() {
     arSessionManager.dispose();
+    countdownTimer?.cancel();
     super.dispose();
   }
 
@@ -75,18 +103,35 @@ class _ARViewScreenState extends State<ARViewScreen> {
                 ),
               ),
             ),
-          )
+          ),
+          Positioned(
+            top: 130.h,
+            left: 20.w,
+            child: Container(
+              padding: EdgeInsets.symmetric(horizontal: 11.w, vertical: 6.h),
+              decoration: BoxDecoration(
+                color: Colors.white10,
+                borderRadius: BorderRadius.circular(12.r),
+              ),
+              child: Text(
+                "Character will move in: $remainingTime s",
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 14.sp,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+          ),
         ],
       ),
     );
   }
 
-  void onARViewCreated(
-      ARSessionManager sessionManager,
+  void onARViewCreated(ARSessionManager sessionManager,
       ARObjectManager objectManager,
       _,
-      __,
-      ) async {
+      __,) async {
     arSessionManager = sessionManager;
     arObjectManager = objectManager;
 
@@ -127,11 +172,19 @@ class _ARViewScreenState extends State<ARViewScreen> {
       position: position,
       rotation: vector.Vector4(0, 1, 0, pi),
     );
-    Timer(const Duration(seconds: 60), () {
-      if (currentCharacter != null) {
+    remainingTime = 60;
+    countdownTimer?.cancel();
+    countdownTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (!mounted) return;
+      setState(() {
+        remainingTime--;
+      });
+
+      if (remainingTime == 0 && currentCharacter != null) {
+        timer.cancel();
         arObjectManager.removeNode(currentCharacter!);
         currentCharacter = null;
-        if (mounted) spawnCharacter();
+        spawnCharacter();
       }
     });
 
@@ -152,7 +205,6 @@ class _ARViewScreenState extends State<ARViewScreen> {
   void monitorProximity() async {
     while (currentCharacter != null) {
       await Future.delayed(const Duration(milliseconds: 500));
-
       final matrix = await arSessionManager.getCameraPose();
       if (matrix == null || currentCharacter == null) continue;
 
@@ -168,6 +220,7 @@ class _ARViewScreenState extends State<ARViewScreen> {
       final distance = camPosition.distanceTo(charPos);
 
       if (distance < 1.0) {
+        countdownTimer?.cancel();
         setState(() {
           points++;
           if (points == 5) {
@@ -178,9 +231,16 @@ class _ARViewScreenState extends State<ARViewScreen> {
           }
         });
 
-        await player.play(AssetSource('sounds/mixkit-achievement-bell-600.wav'));
+        await player.play(
+            AssetSource('sounds/mixkit-achievement-bell-600.wav'));
         await arObjectManager.removeNode(currentCharacter!);
         currentCharacter = null;
+
+        if (_currentUser != null) {
+          await _updateUserPointsLocallyAndSync(_currentUser!, points);
+        } else {
+          print('Error: Current user is null. Cannot save points.');
+        }
 
         Future.delayed(const Duration(seconds: 3), () {
           if (mounted) spawnCharacter();
@@ -189,4 +249,26 @@ class _ARViewScreenState extends State<ARViewScreen> {
       }
     }
   }
+
+  Future<void> _updateUserPointsLocallyAndSync(User user, int newPoints) async {
+    user.points = newPoints;
+    await DB.isar.writeTxn(() async {
+      await DB.isar.users.put(user);
+    });
+    print('User points updated locally for ${user.username}: ${user.points}');
+
+    if (user.serverId != null) {
+      final success = await ApiService.sendPointsUpdateToServer(user.serverId!, user.points);
+      if (success) {
+        print('Points sent to server successfully for ${user.username}');
+      } else {
+        print('Failed to send points to server for ${user
+            .username}. Will retry on next sync.');
+      }
+    } else {
+      print('User ${user
+          .username} is not synced with server yet. Points saved locally.');
+    }
+  }
 }
+

@@ -1,6 +1,10 @@
+import 'package:ar_project/presentation/screens/signup/sign_up_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+
 import '../about/about_us_screen.dart';
+
+
 
 class SignUpScreen extends StatefulWidget {
   static const String routeName = "SignUpScreen";
@@ -12,17 +16,11 @@ class SignUpScreen extends StatefulWidget {
 }
 
 class _SignUpScreenState extends State<SignUpScreen> {
-  final userNameController = TextEditingController();
-  final jobTitleController = TextEditingController();
-  final companyNameController = TextEditingController();
-
-  String? selectedUserIcon;
+  final SignUpController _controller = SignUpController();
 
   @override
   void dispose() {
-    userNameController.dispose();
-    jobTitleController.dispose();
-    companyNameController.dispose();
+    _controller.dispose();
     super.dispose();
   }
 
@@ -64,18 +62,18 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   textAlign: TextAlign.center,
                 ),
                 SizedBox(height: 30.h),
-                _buildTextField(userNameController, "Username", "assets/images/person.png"),
+                _buildTextField(_controller.userNameController, "Username", "assets/images/person.png"),
                 SizedBox(height: 15.h),
-                _buildTextField(jobTitleController, "Job Title", "assets/images/job.png"),
+                _buildTextField(_controller.jobTitleController, "Job Title", "assets/images/job.png"),
                 SizedBox(height: 15.h),
-                _buildTextField(companyNameController, "Company name", "assets/images/company.png"),
+                _buildTextField(_controller.companyNameController, "Company name", "assets/images/company.png"),
                 SizedBox(height: 30.h),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    _buildUserIconOption('user_icon1'),
+                    _buildUserIconOption('user_icon1','male'),
                     SizedBox(width: 30.w),
-                    _buildUserIconOption('user_icon2'),
+                    _buildUserIconOption('user_icon2','female'),
                   ],
                 ),
                 SizedBox(height: 40.h),
@@ -83,9 +81,24 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   width: 0.8.sw,
                   height: 52.h,
                   child: ElevatedButton(
-                    onPressed: () {
-                      Navigator.pushNamed(context, AboutUsScreen.routeName);
+                    onPressed: () async {
+                      if (!_controller.isFormValid) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('Please fill in all fields.')),
+                        );
+                        return;
+                      }
+                      bool success = await _controller.registerUser();
+                      if (success) {
+                        Navigator.pushNamed(context, AboutUsScreen.routeName);
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('Registration failed. Check internet or try again later.')),
+                        );
+                      }
                     },
+
+
                     style: ElevatedButton.styleFrom(
                       backgroundColor: theme.colorScheme.secondary,
                       shape: RoundedRectangleBorder(
@@ -158,17 +171,16 @@ class _SignUpScreenState extends State<SignUpScreen> {
     );
   }
 
-
-  Widget _buildUserIconOption(String iconName) {
+  Widget _buildUserIconOption(String iconName, String genderValue) {
     return GestureDetector(
       onTap: () {
         setState(() {
-          selectedUserIcon = iconName;
+          _controller.selectedGender = genderValue;
         });
       },
       child: Container(
         decoration: BoxDecoration(
-          border: selectedUserIcon == iconName
+          border: _controller.selectedGender == genderValue
               ? Border.all(color: Colors.white, width: 3.0)
               : null,
           borderRadius: BorderRadius.circular(10.r),

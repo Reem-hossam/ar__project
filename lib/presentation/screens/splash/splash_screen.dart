@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import '../../../ar_view_screen.dart';
 import '../../../data/services/user_local_service.dart';
 import '../home/home_screen.dart';
+import '../profile.dart';
 import '../signup/sign_up_screen.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -41,10 +43,11 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
 
     Future.delayed(const Duration(seconds: 3), () async {
       final existingUser = await UserLocalService.getActiveUser();
-
+      print('Existing user: $existingUser');
       if (context.mounted) {
         if (existingUser != null) {
-          Navigator.pushReplacementNamed(context, HomeScreen.routeName);
+        //  Navigator.push(context, MaterialPageRoute(builder: (_) => const ARViewScreen(),),);
+          Navigator.pushReplacementNamed(context, UserWelcomeScreen.routeName);
         } else {
           Navigator.pushReplacementNamed(context, SignUpScreen.routeName);
         }

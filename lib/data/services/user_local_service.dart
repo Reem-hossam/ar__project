@@ -44,8 +44,18 @@ class UserLocalService {
     return await DB.isar.users.filter().syncedEqualTo(false).findAll();
   }
 
-
   static Future<List<User>> getUsersWithPendingPoints() async {
     return await DB.isar.users.filter().pointsGreaterThan(0).syncedEqualTo(false).findAll();
   }
+
+  static Future<void> logoutUser() async {
+    await DB.isar.writeTxn(() async {
+      final allUsers = await DB.isar.users.where().findAll();
+      for (final user in allUsers) {
+        user.isActive = false;
+        await DB.isar.users.put(user);
+      }
+    });
+  }
+
 }

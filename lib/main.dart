@@ -1,3 +1,4 @@
+import 'package:ar_project/presentation/screens/profile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'core/db.dart';
@@ -37,6 +38,7 @@ class _ARGameAppState extends State<ARGameApp> {
           SignUpScreen.routeName: (context) => const SignUpScreen(),
           AboutUsScreen.routeName: (context) => const AboutUsScreen(),
           SplashScreen.routeName: (context) => const SplashScreen(),
+          UserWelcomeScreen.routeName: (context) => const UserWelcomeScreen(),
         },
       ),
     );

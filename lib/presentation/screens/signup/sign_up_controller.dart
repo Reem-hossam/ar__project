@@ -11,7 +11,6 @@ class SignUpController {
   final TextEditingController companyNameController = TextEditingController();
   String? selectedGender;
 
-
   bool get isFormValid =>
       userNameController.text.isNotEmpty &&
           jobTitleController.text.isNotEmpty &&
@@ -46,17 +45,17 @@ class SignUpController {
     if (hasInternet) {
       final registeredUser = await ApiService.registerUserOnServer(newUser);
 
-      if (registeredUser != null) {
-        registeredUser.isActive = true;
+      if (registeredUser != null && registeredUser.serverId != null) {
+        newUser.serverId = registeredUser.serverId;
 
         await DB.isar.writeTxn(() async {
-          await DB.isar.users.put(registeredUser);
+          await DB.isar.users.put(newUser);
         });
 
-        print('User registered on server and saved locally: ${registeredUser.username}');
+        print('✅ User registered on server and saved locally: ${newUser.username}');
         return true;
       } else {
-        print('Server failed. Saving user locally only.');
+        print('Failed to register user on server. Saving locally only.');
       }
     }
 
@@ -67,7 +66,6 @@ class SignUpController {
     print('User saved locally without internet: ${newUser.username}');
     return true;
   }
-
 
   void dispose() {
     userNameController.dispose();

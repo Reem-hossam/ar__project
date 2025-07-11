@@ -13,6 +13,7 @@ class ApiService {
       print("No internet connection. Skipping API call.");
       return null;
     }
+
     try {
       final res = await http.post(
         Uri.parse('$base/users/create'),
@@ -27,11 +28,12 @@ class ApiService {
 
       if (res.statusCode >= 200 && res.statusCode < 300) {
         final body = jsonDecode(res.body);
-        final serverId = body['userId'] ?? body['id'];
-        user.serverId = serverId?.toString();
 
+        final serverId = body['user']?['_id'];
+        user.serverId = serverId?.toString();
         user.synced = true;
 
+        print("User registered on server with ID: ${user.serverId}");
         return user;
       } else {
         print("Failed to register user on server: ${res.statusCode} - ${res.body}");
@@ -42,6 +44,7 @@ class ApiService {
       return null;
     }
   }
+
 
 
   static Future<bool> sendPointsUpdateToServer(String serverId, int points) async {
@@ -70,7 +73,7 @@ class ApiService {
     for (final user in unsyncedUsers) {
       final registeredUser = await registerUserOnServer(user);
       if (registeredUser != null) {
-        await UserLocalService.saveUser(registeredUser); // Update locally after successful sync
+        await UserLocalService.saveUser(registeredUser);
       }
     }
   }

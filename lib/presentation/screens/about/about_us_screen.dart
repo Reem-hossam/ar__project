@@ -10,7 +10,6 @@ class AboutUsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-
     return Scaffold(
       body: Stack(
         children: [
@@ -86,14 +85,14 @@ class _Background extends StatelessWidget {
               radius: 0.9,
               colors: [
                 Color(0xFF000919),
-                Color(0xFF01379C),
+                Color(0xFF006F94),
               ],
               stops: [0.2, 1.0],
             ),
           ),
         ),
         Positioned.fill(
-          child: Image.asset('assets/images/lines.png', fit: BoxFit.cover),
+          child: Image.asset('assets/images/lines2.png', fit: BoxFit.cover),
         ),
       ],
     );

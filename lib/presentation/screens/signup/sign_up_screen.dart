@@ -27,7 +27,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-
     return Scaffold(
       body: Stack(
         children: [
@@ -36,7 +35,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
             gradient: RadialGradient(center: Alignment.center, radius: 0.9,
               colors: [
                 Color(0xFF000919),
-                Color(0xFF01379C),],
+                Color(0xFF006F94),],
               stops: [0.2, 1.0],
             ),
             ),

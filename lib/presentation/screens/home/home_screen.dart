@@ -125,7 +125,7 @@ class _Background extends StatelessWidget {
               radius: 0.9,
               colors: [
                 Color(0xFF000919),
-                Color(0xFF01379C),
+                Color(0xFF006F94),
               ],
               stops: [0.2, 1.0],
             ),
@@ -133,7 +133,7 @@ class _Background extends StatelessWidget {
         ),
         Positioned.fill(
           child: Image.asset(
-            'assets/images/lines.png',
+            'assets/images/lines2.png',
             fit: BoxFit.cover,
           ),
         ),

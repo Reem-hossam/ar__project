@@ -49,7 +49,7 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
         //  Navigator.push(context, MaterialPageRoute(builder: (_) => const ARViewScreen(),),);
           Navigator.pushReplacementNamed(context, UserWelcomeScreen.routeName);
         } else {
-          Navigator.pushReplacementNamed(context, SignUpScreen.routeName);
+          Navigator.pushReplacementNamed(context, HomeScreen.routeName);
         }
       }
     });
@@ -73,7 +73,7 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
                 radius: 0.9,
                 colors: [
                   Color(0xFF000919),
-                  Color(0xFF01379C),
+                  Color(0xFF006F94),
                 ],
                 stops: [0.2, 1.0],
               ),
@@ -81,7 +81,7 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
           ),
           Positioned.fill(
             child: Image.asset(
-              'assets/images/lines.png',
+              'assets/images/lines2.png',
               fit: BoxFit.cover,
             ),
           ),

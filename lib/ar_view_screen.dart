@@ -5,6 +5,7 @@ import 'package:ar_flutter_plugin_updated/datatypes/node_types.dart';
 import 'package:ar_flutter_plugin_updated/managers/ar_object_manager.dart';
 import 'package:ar_flutter_plugin_updated/managers/ar_session_manager.dart';
 import 'package:ar_flutter_plugin_updated/models/ar_node.dart';
+import 'package:ar_project/presentation/screens/win_screen.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -33,6 +34,7 @@ class _ARViewScreenState extends State<ARViewScreen> {
   Timer? countdownTimer;
   User? _currentUser;
   final String characterUrl = "https://raw.githubusercontent.com/Reem-hossam/ar__project/main/assets/models/robot.glb";
+  bool hasWon = false;
 
   @override
   void initState() {
@@ -178,15 +180,18 @@ class _ARViewScreenState extends State<ARViewScreen> {
       if (!mounted) return;
       setState(() {
         remainingTime--;
+        if (remainingTime <= 0) {
+          remainingTime = 0;
+          timer.cancel();
+          if (currentCharacter != null) {
+            arObjectManager.removeNode(currentCharacter!);
+            currentCharacter = null;
+            spawnCharacter();
+          }
+        }
       });
-
-      if (remainingTime == 0 && currentCharacter != null) {
-        timer.cancel();
-        arObjectManager.removeNode(currentCharacter!);
-        currentCharacter = null;
-        spawnCharacter();
-      }
     });
+
 
 
     bool success = await arObjectManager.addNode(newNode) ?? false;
@@ -223,11 +228,14 @@ class _ARViewScreenState extends State<ARViewScreen> {
         countdownTimer?.cancel();
         setState(() {
           points++;
-          if (points == 5) {
-            showBravo = true;
-            Future.delayed(const Duration(seconds: 2), () {
-              if (mounted) setState(() => showBravo = false);
-            });
+          if (points >= 10) {
+            hasWon = true;
+            Navigator.of(context).pushReplacement(
+              MaterialPageRoute(
+                builder: (_) => WinScreen(finalScore: points),
+              ),
+            );
+            return;
           }
         });
 
@@ -258,16 +266,28 @@ class _ARViewScreenState extends State<ARViewScreen> {
     print('User points updated locally for ${user.username}: ${user.points}');
 
     if (user.serverId != null) {
-      final success = await ApiService.sendPointsUpdateToServer(user.serverId!, user.points);
-      if (success) {
-        print('Points sent to server successfully for ${user.username}');
-      } else {
-        print('Failed to send points to server for ${user
-            .username}. Will retry on next sync.');
+      try {
+        final success = await ApiService.sendPointsUpdateToServer(user.serverId!, user.points);
+        if (success) {
+          print('Points sent to server successfully for ${user.username}');
+        } else {
+          print('Failed to send points to server for ${user.username}. Will retry on next sync.');
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text("Check your connection")),
+            );
+          }
+        }
+      } catch (e) {
+        print('Error sending points: $e');
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text("Check your connection")),
+          );
+        }
       }
     } else {
-      print('User ${user
-          .username} is not synced with server yet. Points saved locally.');
+      print('User ${user.username} is not synced with server yet. Points saved locally.');
     }
   }
 }

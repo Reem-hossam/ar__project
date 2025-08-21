@@ -34,7 +34,6 @@ class _ARGameAppState extends State<ARGameApp> {
         theme: AppTheme.lightTheme,
         initialRoute: SplashScreen.routeName,
         routes: {
-
           HomeScreen.routeName: (context) => const HomeScreen(),
           SignUpScreen.routeName: (context) => const SignUpScreen(),
           AboutUsScreen.routeName: (context) => const AboutUsScreen(),

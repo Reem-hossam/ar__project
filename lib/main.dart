@@ -1,6 +1,7 @@
-import 'package:ar_project/presentation/screens/profile.dart';
+import 'package:ar_project/presentation/screens/win_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'ar_view_screen.dart';
 import 'core/db.dart';
 import 'core/utils/app_theme.dart';
 import 'data/services/api_service.dart';
@@ -38,7 +39,10 @@ class _ARGameAppState extends State<ARGameApp> {
           SignUpScreen.routeName: (context) => const SignUpScreen(),
           AboutUsScreen.routeName: (context) => const AboutUsScreen(),
           SplashScreen.routeName: (context) => const SplashScreen(),
-          UserWelcomeScreen.routeName: (context) => const UserWelcomeScreen(),
+          ARViewScreen.routeName: (context) => const ARViewScreen(),
+          WinScreen.routeName: (context) => WinScreen(
+            finalScore: (ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?)?['finalScore'] ?? 0,
+          ),
         },
       ),
     );

@@ -7,14 +7,15 @@ import 'package:ar_flutter_plugin_updated/managers/ar_session_manager.dart';
 import 'package:ar_flutter_plugin_updated/models/ar_node.dart';
 import 'package:ar_project/presentation/screens/win_screen.dart';
 import 'package:audioplayers/audioplayers.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:vector_math/vector_math_64.dart' as vector;
 import '../data/models/user.dart';
-import '../data/services/api_service.dart';
 import '../data/services/user_local_service.dart';
 
 class ARViewScreen extends StatefulWidget {
+  static const String routeName = "ARViewScreen";
   const ARViewScreen({super.key});
 
   @override
@@ -31,14 +32,23 @@ class _ARViewScreenState extends State<ARViewScreen> {
   bool showBravo = false;
   int remainingTime = 60;
   Timer? countdownTimer;
+  int gameTimeRemaining = 120;
+  Timer? gameTimer;
   User? _currentUser;
   final String characterUrl = "https://raw.githubusercontent.com/Reem-hossam/ar__project/main/assets/models/robot.glb";
   bool hasWon = false;
+
+  late StreamSubscription<ConnectivityResult> _connectivitySubscription;
 
   @override
   void initState() {
     super.initState();
     _loadCurrentUserAndPoints();
+    _connectivitySubscription = Connectivity().onConnectivityChanged.listen((ConnectivityResult result) {
+      if (result == ConnectivityResult.none) {
+        _showNoInternetSnackBar();
+      }
+    });
   }
 
   Future<void> _loadCurrentUserAndPoints() async {
@@ -47,6 +57,7 @@ class _ARViewScreenState extends State<ARViewScreen> {
       setState(() {
         _currentUser = activeUser;
         points = activeUser.points;
+        gameTimeRemaining = activeUser.gameTimeRemaining;
         print('Loaded user: ${activeUser.username} with points: $points');
       });
     } else {
@@ -58,7 +69,30 @@ class _ARViewScreenState extends State<ARViewScreen> {
   void dispose() {
     arSessionManager.dispose();
     countdownTimer?.cancel();
+    gameTimer?.cancel();
     super.dispose();
+  }
+
+  void _showNoInternetSnackBar() {
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text(
+            "Connection lost. Please check your internet.",
+            style: TextStyle(color: Colors.white),
+          ),
+          backgroundColor: Colors.red,
+          duration: const Duration(days: 1),
+          action: SnackBarAction(
+            label: 'OK',
+            textColor: Colors.white,
+            onPressed: () {
+              ScaffoldMessenger.of(context).hideCurrentSnackBar();
+            },
+          ),
+        ),
+      );
+    }
   }
 
   @override
@@ -101,6 +135,18 @@ class _ARViewScreenState extends State<ARViewScreen> {
               ),
             ),
           ),
+          Positioned(
+            top: 170.h,
+            left: 20.w,
+            child: Container(
+              padding: EdgeInsets.symmetric(horizontal: 11.w, vertical: 6.h),
+              decoration: BoxDecoration(color: Colors.blue.withOpacity(0.2), borderRadius: BorderRadius.circular(12.r)),
+              child: Text(
+                "Game ends in: $gameTimeRemaining s",
+                style: TextStyle(color: Colors.white, fontSize: 14.sp, fontWeight: FontWeight.w600),
+              ),
+            ),
+          ),
         ],
       ),
     );
@@ -113,11 +159,58 @@ class _ARViewScreenState extends State<ARViewScreen> {
     await arSessionManager.onInitialize(showPlanes: true, handleTaps: false, showFeaturePoints: false);
     await arObjectManager.onInitialize();
 
+    startGameTimer();
     spawnCharacter();
   }
 
+  void startGameTimer() {
+    gameTimer?.cancel();
+    gameTimer = Timer.periodic(const Duration(seconds: 1), (timer) async {
+      if (!mounted) {
+        timer.cancel();
+        return;
+      }
+      setState(() {
+        if (gameTimeRemaining > 0) {
+          gameTimeRemaining--;
+        } else {
+          timer.cancel();
+          Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (_) => WinScreen(finalScore: points)));
+        }
+      });
+
+      if (_currentUser != null) {
+        _currentUser!.gameTimeRemaining = gameTimeRemaining;
+        await _currentUser!.save();
+      }
+    });
+  }
+
+  void startCharacterTimer() {
+    countdownTimer?.cancel();
+    remainingTime = 60;
+    countdownTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (!mounted) {
+        timer.cancel();
+        return;
+      }
+      setState(() {
+        remainingTime--;
+        if (remainingTime <= 0) {
+          remainingTime = 0;
+          timer.cancel();
+          if (currentCharacter != null) {
+            arObjectManager.removeNode(currentCharacter!);
+            currentCharacter = null;
+            spawnCharacter();
+          }
+        }
+      });
+    });
+  }
+
   void spawnCharacter() async {
-    if (isSpawning) return;
+    if (isSpawning || gameTimeRemaining <= 0) return;
     isSpawning = true;
 
     if (currentCharacter != null) {
@@ -127,7 +220,7 @@ class _ARViewScreenState extends State<ARViewScreen> {
 
     List<vector.Vector3> safePositions = List.generate(8, (i) {
       final angle = i * (2 * pi / 8);
-      final distance = 2.0;
+      const distance = 3.0;
       final dx = distance * cos(angle);
       final dz = -distance * sin(angle);
       return vector.Vector3(dx, 0, dz);
@@ -143,29 +236,12 @@ class _ARViewScreenState extends State<ARViewScreen> {
       rotation: vector.Vector4(0, 1, 0, pi),
     );
 
-    remainingTime = 60;
-    countdownTimer?.cancel();
-    countdownTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      if (!mounted) return;
-      setState(() {
-        remainingTime--;
-        if (remainingTime <= 0) {
-          remainingTime = 0;
-          timer.cancel();
-          if (currentCharacter != null) {
-            arObjectManager.removeNode(currentCharacter!);
-            currentCharacter = null;
-            spawnCharacter();
-          }
-        }
-      });
-    });
-
     bool success = await arObjectManager.addNode(newNode) ?? false;
 
     if (success) {
       currentCharacter = newNode;
       await Future.delayed(const Duration(seconds: 2));
+      startCharacterTimer();
       monitorProximity();
     } else {
       Future.delayed(const Duration(seconds: 2), () => spawnCharacter());
@@ -175,7 +251,7 @@ class _ARViewScreenState extends State<ARViewScreen> {
   }
 
   void monitorProximity() async {
-    while (currentCharacter != null) {
+    while (currentCharacter != null && gameTimeRemaining > 0) {
       await Future.delayed(const Duration(milliseconds: 500));
       final matrix = await arSessionManager.getCameraPose();
       if (matrix == null || currentCharacter == null) continue;
@@ -190,11 +266,6 @@ class _ARViewScreenState extends State<ARViewScreen> {
         countdownTimer?.cancel();
         setState(() {
           points++;
-          if (points >= 2) {
-            hasWon = true;
-            Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (_) => WinScreen(finalScore: points)));
-            return;
-          }
         });
 
         await player.play(AssetSource('sounds/mixkit-achievement-bell-600.wav'));
@@ -207,8 +278,8 @@ class _ARViewScreenState extends State<ARViewScreen> {
           print('Error: Current user is null. Cannot save points.');
         }
 
-        Future.delayed(const Duration(seconds: 3), () {
-          if (mounted) spawnCharacter();
+        Future.delayed(const Duration(seconds: 1), () {
+          if (mounted && gameTimeRemaining > 0) spawnCharacter();
         });
         break;
       }

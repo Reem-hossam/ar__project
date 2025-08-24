@@ -26,4 +26,10 @@ class User extends HiveObject {
 
   @HiveField(7)
   bool isActive = false;
+
+  @HiveField(8)
+  bool hasCompletedGame = false;
+
+  @HiveField(9)
+  int gameTimeRemaining = 120;
 }

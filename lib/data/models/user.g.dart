@@ -24,13 +24,15 @@ class UserAdapter extends TypeAdapter<User> {
       ..gender = fields[4] as String
       ..points = fields[5] as int
       ..synced = fields[6] as bool
-      ..isActive = fields[7] as bool;
+      ..isActive = fields[7] as bool
+      ..hasCompletedGame = fields[8] as bool
+      ..gameTimeRemaining = fields[9] as int;
   }
 
   @override
   void write(BinaryWriter writer, User obj) {
     writer
-      ..writeByte(8)
+      ..writeByte(10)
       ..writeByte(0)
       ..write(obj.serverId)
       ..writeByte(1)
@@ -46,7 +48,11 @@ class UserAdapter extends TypeAdapter<User> {
       ..writeByte(6)
       ..write(obj.synced)
       ..writeByte(7)
-      ..write(obj.isActive);
+      ..write(obj.isActive)
+      ..writeByte(8)
+      ..write(obj.hasCompletedGame)
+      ..writeByte(9)
+      ..write(obj.gameTimeRemaining);
   }
 
   @override

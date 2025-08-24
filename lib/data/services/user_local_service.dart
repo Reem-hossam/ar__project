@@ -1,4 +1,3 @@
-import 'package:hive/hive.dart';
 import '../../core/db.dart';
 import '../models/user.dart';
 
@@ -47,5 +46,10 @@ class UserLocalService {
 
   static Future<List<User>> getAllUsers() async {
     return DB.usersBox.values.toList();
+  }
+
+  static Future<void> markGameAsCompleted(User user) async {
+    user.hasCompletedGame = true;
+    await user.save();
   }
 }

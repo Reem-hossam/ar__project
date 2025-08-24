@@ -34,6 +34,7 @@ class ApiService {
         user.synced = true;
 
         print("User registered on server with ID: ${user.serverId}");
+        await UserLocalService.saveUser(user);
         return user;
       } else {
         print("Failed to register user on server: ${res.statusCode} - ${res.body}");
@@ -46,15 +47,14 @@ class ApiService {
   }
 
 
-
   static Future<bool> sendPointsUpdateToServer(String serverId, int points) async {
     try {
       final res = await http.post(
         Uri.parse('$base/users/addPoints/$serverId'),
-        body: jsonEncode({"points":points.toString()}),
+        body: jsonEncode({"points": points.toString()}),
         headers: {"Content-Type": "application/json"},
       );
-      if (res.statusCode >= 200 && res.statusCode < 300){
+      if (res.statusCode >= 200 && res.statusCode < 300) {
         print("Points updated successfully for user $serverId");
         return true;
       } else {
@@ -89,7 +89,6 @@ class ApiService {
           await UserLocalService.saveUser(user);
         }
       } else {
-
         print("User ${user.username} has points but no serverId. Attempting to register first.");
         final registeredUser = await registerUserOnServer(user);
         if (registeredUser != null) {

@@ -5,7 +5,6 @@ import '../../../data/services/user_local_service.dart';
 import '../../../data/models/user.dart';
 import '../../ar_view_screen.dart';
 
-
 class UserWelcomeScreen extends StatefulWidget {
   static const routeName = "UserWelcomeScreen";
   const UserWelcomeScreen({super.key});
@@ -30,16 +29,7 @@ class _UserWelcomeScreenState extends State<UserWelcomeScreen> {
     });
   }
 
-  void logout() async {
-    await UserLocalService.logoutUser();
-    if (context.mounted) {
-      Navigator.pushNamedAndRemoveUntil(
-        context,
-        SignUpScreen.routeName,
-            (route) => false,
-      );
-    }
-  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -51,50 +41,48 @@ class _UserWelcomeScreenState extends State<UserWelcomeScreen> {
 
     return Scaffold(
       body: Stack(
-        children:[
-          const _Background(),
-          Center(
-          child: Padding(
-            padding: EdgeInsets.all(20.w),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  "Welcome, ${user!.username}!",
-                  style: TextStyle(color: Colors.white, fontSize: 28.sp),
-                  textAlign: TextAlign.center,
+          children:[
+            const _Background(),
+            Center(
+              child: Padding(
+                padding: EdgeInsets.all(20.w),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      "Welcome, ${user!.username}!",
+                      style: TextStyle(color: Colors.white, fontSize: 28.sp),
+                      textAlign: TextAlign.center,
+                    ),
+                    SizedBox(height: 20.h),
+                    Text(
+                      "Your current score: ${user!.points}",
+                      style: TextStyle(color: Colors.white70, fontSize: 20.sp),
+                      textAlign: TextAlign.center,
+                    ),
+                    SizedBox(height: 40.h),
+                    ElevatedButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => const ARViewScreen(),
+                          ),
+                        );
+                      },
+                      child: const Text("Start Game"),
+                    ),
+
+                  ],
                 ),
-                SizedBox(height: 20.h),
-                Text(
-                  "Your current score: ${user!.points}",
-                  style: TextStyle(color: Colors.white70, fontSize: 20.sp),
-                  textAlign: TextAlign.center,
-                ),
-                SizedBox(height: 40.h),
-                ElevatedButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => const ARViewScreen(),
-                      ),
-                    );
-                  },
-                  child: const Text("Start Game"),
-                ),
-                TextButton(
-                  onPressed: logout,
-                  child: const Text("Log out", style: TextStyle(color: Colors.redAccent)),
-                )
-              ],
+              ),
             ),
-          ),
-        ),
-    ]
+          ]
       ),
     );
   }
 }
+
 class _Background extends StatelessWidget {
   const _Background();
 

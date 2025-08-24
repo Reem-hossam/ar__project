@@ -1,61 +1,51 @@
-import 'package:isar/isar.dart';
+import 'package:hive/hive.dart';
 import '../../core/db.dart';
 import '../models/user.dart';
 
 class UserLocalService {
 
   static Future<int> saveUser(User user) async {
-    int id = 0;
-    await DB.isar.writeTxn(() async {
-      final allUsers = await DB.isar.users.where().findAll();
-      for (final u in allUsers) {
-        u.isActive = false;
-        await DB.isar.users.put(u);
-      }
+    for (var u in DB.usersBox.values) {
+      u.isActive = false;
+      await u.save();
+    }
 
-      user.isActive = true;
-      id = await DB.isar.users.put(user);
-    });
+    user.isActive = true;
+    int id = await DB.usersBox.add(user);
     return id;
   }
 
-
-  static Future<User?> getInitialUser() async {
-    final allUsers = await DB.isar.users.where().findAll();
-    allUsers.sort((a, b) => a.id.compareTo(b.id));
-    return allUsers.isNotEmpty ? allUsers.first : null;
-  }
-
   static Future<User?> getActiveUser() async {
-    return await DB.isar.users.filter().isActiveEqualTo(true).findFirst();
+    final activeUsers = DB.usersBox.values.where((u) => u.isActive);
+    if (activeUsers.isNotEmpty) {
+      return activeUsers.first;
+    }
+    return null;
   }
-  static Future<void> updatePoints(int userId, int newPoints) async {
-    await DB.isar.writeTxn(() async {
-      final user = await DB.isar.users.get(userId);
-      if (user != null) {
-        user.points = newPoints;
-        user.synced = false;
-        await DB.isar.users.put(user);
-      }
-    });
+
+
+  static Future<void> updatePoints(User user, int newPoints) async {
+    user.points = newPoints;
+    user.synced = false;
+    await user.save();
+  }
+
+  static Future<void> logoutAllUsers() async {
+    for (var user in DB.usersBox.values) {
+      user.isActive = false;
+      await user.save();
+    }
   }
 
   static Future<List<User>> getUnsyncedUsers() async {
-    return await DB.isar.users.filter().syncedEqualTo(false).findAll();
+    return DB.usersBox.values.where((u) => u.synced == false).toList();
   }
 
   static Future<List<User>> getUsersWithPendingPoints() async {
-    return await DB.isar.users.filter().pointsGreaterThan(0).syncedEqualTo(false).findAll();
+    return DB.usersBox.values.where((u) => u.synced == false && u.points > 0).toList();
   }
 
-  static Future<void> logoutUser() async {
-    await DB.isar.writeTxn(() async {
-      final allUsers = await DB.isar.users.where().findAll();
-      for (final user in allUsers) {
-        user.isActive = false;
-        await DB.isar.users.put(user);
-      }
-    });
+  static Future<List<User>> getAllUsers() async {
+    return DB.usersBox.values.toList();
   }
-
 }

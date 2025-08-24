@@ -17,7 +17,7 @@ class SignUpScreen extends StatefulWidget {
 
 class _SignUpScreenState extends State<SignUpScreen> {
   final SignUpController _controller = SignUpController();
-
+  bool _isLoading = false;
   @override
   void dispose() {
     _controller.dispose();
@@ -80,14 +80,22 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   width: 0.8.sw,
                   height: 52.h,
                   child: ElevatedButton(
-                    onPressed: () async {
+                    onPressed: _isLoading ? null :  () async {
                       if (!_controller.isFormValid) {
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(content: Text('Please fill in all fields.')),
                         );
                         return;
                       }
+                      setState(() {
+                        _isLoading = true;
+                      });
+
                       bool success = await _controller.registerUser();
+
+                      setState(() {
+                        _isLoading = false;
+                      });
                       if (success) {
                         Navigator.pushNamed(context, AboutUsScreen.routeName);
                       } else {
@@ -104,7 +112,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         borderRadius: BorderRadius.circular(30.0.r),
                       ),
                     ),
-                    child: Text(
+                    child:  _isLoading
+                        ? const CircularProgressIndicator(color: Colors.white)
+                    :Text(
                       "SIGN UP",
                       style: theme.textTheme.titleMedium?.copyWith(color: Colors.white),
                     ),

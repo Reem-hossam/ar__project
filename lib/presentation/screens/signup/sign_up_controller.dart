@@ -1,9 +1,9 @@
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
-import 'package:isar/isar.dart';
 import '../../../core/db.dart';
 import '../../../data/models/user.dart';
 import '../../../data/services/api_service.dart';
+import '../../../data/services/user_local_service.dart';
 
 class SignUpController {
   final TextEditingController userNameController = TextEditingController();
@@ -23,13 +23,10 @@ class SignUpController {
       return false;
     }
 
-    await DB.isar.writeTxn(() async {
-      final oldUsers = await DB.isar.users.where().findAll();
-      for (final user in oldUsers) {
-        user.isActive = false;
-        await DB.isar.users.put(user);
-      }
-    });
+    for (var u in DB.usersBox.values) {
+      u.isActive = false;
+      await u.save();
+    }
 
     final newUser = User()
       ..username = userNameController.text.trim()
@@ -44,26 +41,17 @@ class SignUpController {
 
     if (hasInternet) {
       final registeredUser = await ApiService.registerUserOnServer(newUser);
-
       if (registeredUser != null && registeredUser.serverId != null) {
-        newUser.serverId = registeredUser.serverId;
-
-        await DB.isar.writeTxn(() async {
-          await DB.isar.users.put(newUser);
-        });
-
-        print('✅ User registered on server and saved locally: ${newUser.username}');
+        print(' User registered on server and saved locally: ${newUser.username}');
         return true;
       } else {
-        print('Failed to register user on server. Saving locally only.');
+        print(' Failed to register user on server. Saving locally only.');
       }
     }
 
-    await DB.isar.writeTxn(() async {
-      await DB.isar.users.put(newUser);
-    });
+    await UserLocalService.saveUser(newUser);
 
-    print('User saved locally without internet: ${newUser.username}');
+    print(' User saved locally without internet: ${newUser.username}');
     return true;
   }
 

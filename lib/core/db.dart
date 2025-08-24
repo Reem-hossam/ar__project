@@ -1,11 +1,13 @@
-import 'package:isar/isar.dart';
-import 'package:path_provider/path_provider.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import '../data/models/user.dart';
 
 class DB {
-  static late final Isar isar;
+  static late Box<User> usersBox;
+
   static Future<void> init() async {
-    final dir = await getApplicationDocumentsDirectory();
-    isar = await Isar.open([UserSchema], directory: dir.path);
+    await Hive.initFlutter();
+    Hive.registerAdapter(UserAdapter());
+
+    usersBox = await Hive.openBox<User>('usersBox');
   }
 }

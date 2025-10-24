@@ -39,7 +39,7 @@ class _ARGameAppState extends State<ARGameApp> {
           SignUpScreen.routeName: (context) => const SignUpScreen(),
           AboutUsScreen.routeName: (context) => const AboutUsScreen(),
           SplashScreen.routeName: (context) => const SplashScreen(),
-          ARViewScreen.routeName: (context) => const ARViewScreen(),
+         ARViewScreen.routeName: (context) => const ARViewScreen(),
           WinScreen.routeName: (context) => WinScreen(
             finalScore: (ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?)?['finalScore'] ?? 0,
           ),

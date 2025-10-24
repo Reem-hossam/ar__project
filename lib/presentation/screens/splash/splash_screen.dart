@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import '../../../ar_view_screen.dart';
 import '../../../data/services/user_local_service.dart';
@@ -70,18 +72,18 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
             decoration: const BoxDecoration(
               gradient: RadialGradient(
                 center: Alignment.center,
-                radius: 0.9,
+                radius:1,
                 colors: [
-                  Color(0xFF000919),
-                  Color(0xFF006F94),
+                  Color(0xFFFFFFFF),
+                  Color(0xFF0099CC),
                 ],
-                stops: [0.2, 1.0],
+                stops: [0.02,1],
               ),
             ),
           ),
           Positioned.fill(
             child: Image.asset(
-              'assets/images/lines2.png',
+              'assets/images/lines3.png',
               fit: BoxFit.cover,
             ),
           ),
@@ -92,7 +94,17 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
                 scale: _scaleAnimation,
                 child: Text(
                   "AR GAME FIND ME",
-                  style: Theme.of(context).textTheme.headlineLarge,
+                  style: Theme.of(context).textTheme.headlineLarge!.copyWith(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    shadows: [
+                      Shadow(
+                        offset: const Offset(2, 2),
+                        blurRadius: 6,
+                        color: Colors.black.withOpacity(0.9),
+                      ),
+                    ],
+                  ),
                   textAlign: TextAlign.center,
                 ),
               ),

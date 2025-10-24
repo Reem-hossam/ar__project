@@ -20,12 +20,14 @@ class AboutUsScreen extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 SizedBox(height: 80.h),
-                Text(
-                  "PLAYING THE GAME AND LEARN",
-                  style: theme.textTheme.titleSmall?.copyWith(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16.sp,
+                Center(
+                  child: Text(
+                    "PLAYING THE GAME AND LEARN",
+                    style: theme.textTheme.titleSmall?.copyWith(
+                      color: Color.fromRGBO(1, 58, 77, 1),
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16.sp,
+                    ),
                   ),
                 ),
                 SizedBox(height: 30.h),
@@ -51,7 +53,7 @@ class AboutUsScreen extends StatelessWidget {
                         ),
                       ),
                       child: Text(
-                        "Start",
+                        "PLAY",
                         style: theme.textTheme.labelLarge?.copyWith(
                           color: Colors.white,
                           fontWeight: FontWeight.bold,
@@ -82,17 +84,17 @@ class _Background extends StatelessWidget {
           decoration: const BoxDecoration(
             gradient: RadialGradient(
               center: Alignment.center,
-              radius: 0.9,
+              radius:1,
               colors: [
-                Color(0xFF000919),
-                Color(0xFF006F94),
+                Color(0xFFFFFFFF),
+                Color(0xFF0099CC),
               ],
-              stops: [0.2, 1.0],
+              stops: [0.02,1],
             ),
           ),
         ),
         Positioned.fill(
-          child: Image.asset('assets/images/lines2.png', fit: BoxFit.cover),
+          child: Image.asset('assets/images/lines3.png', fit: BoxFit.cover),
         ),
       ],
     );

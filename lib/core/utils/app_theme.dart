@@ -7,8 +7,7 @@ class AppTheme {
       useMaterial3: true,
       scaffoldBackgroundColor: const Color(0xFF000919),
       fontFamily: 'Mplus 1p Bold',
-
-      colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF01379C), secondary: const Color(0xFFDB2653),),
+      colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF01379C), secondary: const Color(0xFF0180CD),),
       textTheme: TextTheme(
         headlineLarge: TextStyle(
           fontSize: 34.sp,
@@ -27,7 +26,7 @@ class AppTheme {
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
-          backgroundColor: const Color(0xFFFE1F66),
+          backgroundColor: const Color(0xFF0180CD),
           foregroundColor: Colors.white,
           textStyle: TextStyle(
             fontSize: 16.sp,

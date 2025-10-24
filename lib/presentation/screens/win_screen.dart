@@ -23,19 +23,16 @@ class _WinScreenState extends State<WinScreen> {
   Future<void> _sendFinalScore() async {
     final activeUser = await UserLocalService.getActiveUser();
     if (activeUser != null) {
-      // تحديث كل البيانات في نفس الوقت قبل الحفظ
-      activeUser.points = widget.finalScore;
-      activeUser.gameTimeRemaining = 0; // تأكد من أن الوقت المتبقي هو صفر
-      activeUser.hasCompletedGame = true; // تعيين حالة اللعبة إلى مكتملة
 
-      // حفظ التغييرات مرة واحدة
+      activeUser.points = widget.finalScore;
+      activeUser.gameTimeRemaining = 0;
+      activeUser.hasCompletedGame = true;
       await activeUser.save();
 
-      // إرسال السكور للسيرفر بعد الحفظ المحلي
       if (activeUser.serverId != null) {
         await ApiService.sendPointsUpdateToServer(activeUser.serverId!, widget.finalScore);
         activeUser.synced = true;
-        await activeUser.save(); // حفظ حالة المزامنة
+        await activeUser.save();
       } else {
         print('Error: Cannot send final score. User serverId is null.');
       }
@@ -56,18 +53,18 @@ class _WinScreenState extends State<WinScreen> {
               decoration: const BoxDecoration(
                 gradient: RadialGradient(
                   center: Alignment.center,
-                  radius: 0.9,
+                  radius:1,
                   colors: [
-                    Color(0xFF000919),
-                    Color(0xFF006F94),
+                    Color(0xFFFFFFFF),
+                    Color(0xFF0099CC),
                   ],
-                  stops: [0.2, 1.0],
+                  stops: [0.02,1],
                 ),
               ),
             ),
             Positioned.fill(
               child: Image.asset(
-                'assets/images/lines.png',
+                'assets/images/lines3.png',
                 fit: BoxFit.cover,
               ),
             ),
@@ -84,6 +81,13 @@ class _WinScreenState extends State<WinScreen> {
                         fontSize: 36.sp,
                         fontWeight: FontWeight.bold,
                         color: Colors.white,
+                        shadows: [
+                          Shadow(
+                            offset: const Offset(2, 2),
+                            blurRadius: 6,
+                            color: Colors.black.withOpacity(0.9),
+                          ),
+                        ],
                       ),
                     ),
                     SizedBox(height: 20.h),
@@ -91,7 +95,13 @@ class _WinScreenState extends State<WinScreen> {
                       'Your Final Score: ${widget.finalScore}',
                       style: theme.textTheme.titleMedium?.copyWith(
                         fontSize: 18.sp,
-                        color: Colors.white70,
+                          color: Colors.white,
+                          shadows: [
+                          Shadow(
+                          offset: const Offset(2, 2),
+                      blurRadius: 6,
+                      color: Colors.black.withOpacity(0.9),
+                    ),]
                       ),
                     ),
                     SizedBox(height: 40.h),

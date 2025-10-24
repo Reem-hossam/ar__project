@@ -9,7 +9,7 @@ class AboutInfoBox extends StatelessWidget {
     return Container(
       padding: EdgeInsets.all(20.w),
       decoration: BoxDecoration(
-        color: const Color.fromRGBO(31, 109, 254, 0.39),
+        color: const Color.fromRGBO(32, 93, 114, 1),
         borderRadius: BorderRadius.circular(20.r),
       ),
       child: Column(

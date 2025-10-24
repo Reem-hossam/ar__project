@@ -110,7 +110,7 @@ class _ARViewScreenState extends State<ARViewScreen> {
               padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 10.h),
               decoration: BoxDecoration(
                 gradient: LinearGradient(
-                  colors: [const Color(0xFFDB2653), const Color(0xFFE91E63).withOpacity(0.8)],
+                  colors: [const Color(0xFF0180CD), const Color(0xFF0180CD).withOpacity(0.8)],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 ),

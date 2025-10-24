@@ -1,9 +1,7 @@
 import 'package:ar_project/presentation/screens/signup/sign_up_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-
 import '../about/about_us_screen.dart';
-
 
 
 class SignUpScreen extends StatefulWidget {
@@ -32,17 +30,20 @@ class _SignUpScreenState extends State<SignUpScreen> {
         children: [
           Container(
             decoration: const BoxDecoration(
-            gradient: RadialGradient(center: Alignment.center, radius: 0.9,
-              colors: [
-                Color(0xFF000919),
-                Color(0xFF006F94),],
-              stops: [0.2, 1.0],
-            ),
+              gradient: RadialGradient(
+                center: Alignment.center,
+                radius:1,
+                colors: [
+                  Color(0xFFFFFFFF),
+                  Color(0xFF0099CC),
+                ],
+                stops: [0.02,1],
+              ),
             ),
           ),
           Positioned.fill(
             child: Image.asset(
-              'assets/images/lines.png',
+              'assets/images/lines3.png',
               fit: BoxFit.cover,
             ),
           ),
@@ -51,11 +52,34 @@ class _SignUpScreenState extends State<SignUpScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                SizedBox(height: 100.h),
+                SizedBox(height:50.h),
+                Container(
+                  padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 8.h),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(12.r),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.15),
+                        blurRadius: 6,
+                        offset: const Offset(0, 3),
+                      ),
+                    ],
+                  ),
+                  child: Text(
+                    "FindMe",
+                    style: theme.textTheme.displaySmall?.copyWith(
+                      color: const Color(0xFF0099CC),
+                      fontWeight: FontWeight.bold,
+                      fontSize: 30.sp,
+                    ),
+                  ),
+                ),
+                SizedBox(height:50.h),
                 Text(
                   "Register your Account",
                   style: theme.textTheme.titleSmall?.copyWith(
-                    color: Colors.white,
+                    color: Color.fromRGBO(1, 58, 77, 1),
                     fontWeight: FontWeight.bold,
                   ),
                   textAlign: TextAlign.center,
@@ -66,16 +90,16 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 _buildTextField(_controller.jobTitleController, "Job Title", "assets/images/job.png"),
                 SizedBox(height: 15.h),
                 _buildTextField(_controller.companyNameController, "Company name", "assets/images/company.png"),
-                SizedBox(height: 30.h),
+                SizedBox(height: 15.h),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     _buildUserIconOption('user_icon1','male'),
-                    SizedBox(width: 30.w),
+                    SizedBox(width:12.w),
                     _buildUserIconOption('user_icon2','female'),
                   ],
                 ),
-                SizedBox(height: 40.h),
+                SizedBox(height:35.h),
                 SizedBox(
                   width: 0.8.sw,
                   height: 52.h,
@@ -121,20 +145,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   ),
                 ),
                 SizedBox(height: 20.h),
-                TextButton(
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
-                  child: Text(
-                    "Back to Home",
-                    style: theme.textTheme.labelLarge?.copyWith(
-                      color: Colors.white,
-                      decoration: TextDecoration.underline,
-                      decorationColor: Colors.white
-                    ),
-                  ),
-                ),
-                SizedBox(height: 20.h),
               ],
             ),
           ),
@@ -149,7 +159,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
       width: double.infinity,
       height: 55.h,
       decoration: BoxDecoration(
-        color: const Color.fromRGBO(68, 80, 255, 0.82),
+        color: const Color.fromRGBO(0, 153, 204, 1),
       ),
       child: Row(
         children: [
@@ -188,13 +198,15 @@ class _SignUpScreenState extends State<SignUpScreen> {
         });
       },
       child: Container(
+        padding: EdgeInsets.all(5.sp),
         decoration: BoxDecoration(
+          color: Color.fromRGBO(0, 153, 204, 1),
           border: _controller.selectedGender == genderValue
               ? Border.all(color: Colors.white, width: 3.0)
               : null,
           borderRadius: BorderRadius.circular(10.r),
         ),
-        child: Image.asset('assets/images/$iconName.png', width: 80.w, height: 80.h),
+        child: Image.asset('assets/images/$iconName.png', width:65.w, height:65.h),
       ),
     );
   }

@@ -44,16 +44,31 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                   opacity: animations.findMeOpacity,
                   child: ScaleTransition(
                     scale: animations.findMeScale,
-                    child: Text(
-                      "FindMe",
-                      style: theme.textTheme.displaySmall?.copyWith(
+                    child: Container(
+                      padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 8.h),
+                      decoration: BoxDecoration(
                         color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 30.sp,
+                        borderRadius: BorderRadius.circular(12.r),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.15),
+                            blurRadius: 6,
+                            offset: const Offset(0, 3),
+                          ),
+                        ],
+                      ),
+                      child: Text(
+                        "FindMe",
+                        style: theme.textTheme.displaySmall?.copyWith(
+                          color: const Color(0xFF0099CC),
+                          fontWeight: FontWeight.bold,
+                          fontSize: 30.sp,
+                        ),
                       ),
                     ),
                   ),
                 ),
+
                 SizedBox(height:80.h),
                 AnimatedBuilder(
                   animation: animations.initialAppearanceController,
@@ -74,7 +89,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                     );
                   },
                 ),
-                const Spacer(),
+                SizedBox(height: 60.h),
                 FadeTransition(
                   opacity: animations.buttonOpacity,
                   child: SizedBox(
@@ -122,18 +137,18 @@ class _Background extends StatelessWidget {
           decoration: const BoxDecoration(
             gradient: RadialGradient(
               center: Alignment.center,
-              radius: 0.9,
+              radius:1,
               colors: [
-                Color(0xFF000919),
-                Color(0xFF006F94),
+                Color(0xFFFFFFFF),
+                Color(0xFF0099CC),
               ],
-              stops: [0.2, 1.0],
+              stops: [0.02,1],
             ),
           ),
         ),
         Positioned.fill(
           child: Image.asset(
-            'assets/images/lines2.png',
+            'assets/images/lines3.png',
             fit: BoxFit.cover,
           ),
         ),

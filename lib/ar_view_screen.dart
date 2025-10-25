@@ -35,7 +35,7 @@ class _ARViewScreenState extends State<ARViewScreen> {
   int gameTimeRemaining = 120;
   Timer? gameTimer;
   User? _currentUser;
-  final String characterUrl = "https://raw.githubusercontent.com/Reem-hossam/ar__project/main/assets/models/robot.glb";
+  final String characterUrl = "https://raw.githubusercontent.com/Reem-hossam/ar__project/main/assets/models/robot2.glb";
   bool hasWon = false;
 
   late StreamSubscription<ConnectivityResult> _connectivitySubscription;

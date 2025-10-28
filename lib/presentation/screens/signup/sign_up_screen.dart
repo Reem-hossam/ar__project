@@ -2,8 +2,6 @@ import 'package:ar_project/pending_activation_screen.dart';
 import 'package:ar_project/presentation/screens/signup/sign_up_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import '../about/about_us_screen.dart';
-
 
 class SignUpScreen extends StatefulWidget {
   static const String routeName = "SignUpScreen";
@@ -11,12 +9,12 @@ class SignUpScreen extends StatefulWidget {
 
   @override
   State<SignUpScreen> createState() => _SignUpScreenState();
-
 }
 
 class _SignUpScreenState extends State<SignUpScreen> {
   final SignUpController _controller = SignUpController();
   bool _isLoading = false;
+
   @override
   void dispose() {
     _controller.dispose();
@@ -33,12 +31,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
             decoration: const BoxDecoration(
               gradient: RadialGradient(
                 center: Alignment.center,
-                radius:1,
+                radius: 1,
                 colors: [
                   Color(0xFFFFFFFF),
                   Color(0xFF0099CC),
                 ],
-                stops: [0.02,1],
+                stops: [0.02, 1],
               ),
             ),
           ),
@@ -53,7 +51,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                SizedBox(height:50.h),
+                SizedBox(height: 50.h),
                 Container(
                   padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 8.h),
                   decoration: BoxDecoration(
@@ -76,11 +74,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     ),
                   ),
                 ),
-                SizedBox(height:50.h),
+                SizedBox(height: 50.h),
                 Text(
                   "Register your Account",
                   style: theme.textTheme.titleSmall?.copyWith(
-                    color: Color.fromRGBO(1, 58, 77, 1),
+                    color: const Color.fromRGBO(1, 58, 77, 1),
                     fontWeight: FontWeight.bold,
                   ),
                   textAlign: TextAlign.center,
@@ -99,51 +97,40 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    _buildUserIconOption('user_icon1','male'),
-                    SizedBox(width:12.w),
-                    _buildUserIconOption('user_icon2','female'),
+                    _buildUserIconOption('user_icon1', 'male'),
+                    SizedBox(width: 12.w),
+                    _buildUserIconOption('user_icon2', 'female'),
                   ],
                 ),
-                SizedBox(height:35.h),
+                SizedBox(height: 35.h),
                 SizedBox(
                   width: 0.8.sw,
                   height: 52.h,
                   child: ElevatedButton(
-                    onPressed: _isLoading ? null :  () async {
-                      if (!_controller.isFormValid) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Please fill in all fields.')),
-                        );
-                        return;
-                      }
-                      setState(() {
-                        _isLoading = true;
-                      });
+                    onPressed: _isLoading
+                        ? null
+                        : () async {
+                      setState(() => _isLoading = true);
+                      final result = await _controller.registerUser();
+                      setState(() => _isLoading = false);
 
-                      bool success = await _controller.registerUser();
-
-                      setState(() {
-                        _isLoading = false;
-                      });
-                      if (success) {
+                      if (result == null) {
                         Navigator.pushNamed(context, PendingActivationScreen.routeName);
                       } else {
                         ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Registration failed. Check internet or try again later.')),
+                          SnackBar(content: Text(result)),
                         );
                       }
                     },
-
-
                     style: ElevatedButton.styleFrom(
                       backgroundColor: theme.colorScheme.secondary,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(30.0.r),
                       ),
                     ),
-                    child:  _isLoading
+                    child: _isLoading
                         ? const CircularProgressIndicator(color: Colors.white)
-                    :Text(
+                        : Text(
                       "SIGN UP",
                       style: theme.textTheme.titleMedium?.copyWith(color: Colors.white),
                     ),
@@ -163,9 +150,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
     return Container(
       width: double.infinity,
       height: 55.h,
-      decoration: BoxDecoration(
-        color: const Color.fromRGBO(0, 153, 204, 1),
-      ),
+      decoration: const BoxDecoration(color: Color.fromRGBO(0, 153, 204, 1)),
       child: Row(
         children: [
           Padding(
@@ -205,13 +190,13 @@ class _SignUpScreenState extends State<SignUpScreen> {
       child: Container(
         padding: EdgeInsets.all(5.sp),
         decoration: BoxDecoration(
-          color: Color.fromRGBO(0, 153, 204, 1),
+          color: const Color.fromRGBO(0, 153, 204, 1),
           border: _controller.selectedGender == genderValue
               ? Border.all(color: Colors.white, width: 3.0)
               : null,
           borderRadius: BorderRadius.circular(10.r),
         ),
-        child: Image.asset('assets/images/$iconName.png', width:65.w, height:65.h),
+        child: Image.asset('assets/images/$iconName.png', width: 65.w, height: 65.h),
       ),
     );
   }

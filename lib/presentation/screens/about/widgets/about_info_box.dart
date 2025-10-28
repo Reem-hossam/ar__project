@@ -26,24 +26,18 @@ class AboutInfoBox extends StatelessWidget {
             ),
           ),
           SizedBox(height: 20.h),
-          Text(
-            "Welcome to FindMe! In this exciting AR game, your mission is to find hidden robots in your real-world environment. Use your device's camera to scan your surroundings. When a robot appears, get closer to it to earn points! The goal is to collect as many points as you can by finding all the robots.",
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 12.sp,
-            ),
-          ),
+          _buildInfoText("CSCEC International Egypt is the official Egyptian subsidiary of China State Construction Engineering Corporation (CSCEC), one of the world’s largest construction and engineering conglomerates. As a registered Egyptian contractor, the company operates with full legal presence in Egypt while maintaining the strong backing and expertise of its global parent company."),
           const Divider(color: Colors.white),
-          _buildInfoText("Platform: Android & iOS"),
-          _buildInfoText("Version: 1.0"),
-          _buildInfoText("Release: 2025"),
+          _buildInfoText("CSCEC Ranked No. 1 Global Contractor by the U.S. magazine ENR from 2016 to 2024."),
           const Divider(color: Colors.white),
-          SizedBox(height: 20.h),
-          _buildInfoText("Game Director: Benny burham, M.Pd"),
-          _buildInfoText("Game Designer: Lyla Muha, S.Ag"),
-          _buildInfoText("Game Developer: COMING SOON"),
-          _buildInfoText("Fullstack Developer: COMING SOON"),
-          _buildInfoText("Product Manager: COMING SOON"),
+          _buildInfoText("Awarded the highest credit rating in the global construction industry (A, stable outlook) by Standard & Poor’s, Moody’s, and Fitch."),
+          const Divider(color: Colors.white),
+          _buildInfoText("Ranked 14th among the Global Fortune 500 Companies in 2024."),
+          const Divider(color: Colors.white),
+          _buildInfoText("Ranked 4th among the China Fortune 500 Companies in 2024."),
+          const Divider(color: Colors.white),
+          _buildInfoText("You can find us in Hall 1 stand 1E7"),
+
         ],
       ),
     );
@@ -62,3 +56,4 @@ class AboutInfoBox extends StatelessWidget {
     );
   }
 }
+

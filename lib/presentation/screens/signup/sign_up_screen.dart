@@ -1,3 +1,4 @@
+import 'package:ar_project/pending_activation_screen.dart';
 import 'package:ar_project/presentation/screens/signup/sign_up_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -91,6 +92,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 SizedBox(height: 15.h),
                 _buildTextField(_controller.companyNameController, "Company name", "assets/images/company.png"),
                 SizedBox(height: 15.h),
+                _buildTextField(_controller.phoneNumberController, "Phone Number", "assets/images/phone.png"),
+                SizedBox(height: 15.h),
+                _buildTextField(_controller.emailController, "Email", "assets/images/email.png"),
+                SizedBox(height: 15.h),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -121,7 +126,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         _isLoading = false;
                       });
                       if (success) {
-                        Navigator.pushNamed(context, AboutUsScreen.routeName);
+                        Navigator.pushNamed(context, PendingActivationScreen.routeName);
                       } else {
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(content: Text('Registration failed. Check internet or try again later.')),

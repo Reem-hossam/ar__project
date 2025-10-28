@@ -32,4 +32,13 @@ class User extends HiveObject {
 
   @HiveField(9)
   int gameTimeRemaining = 120;
+
+  @HiveField(10)
+  String? phoneNumber;
+
+  @HiveField(11)
+  String? email;
+
+  @HiveField(12)
+  bool isAuthorizedToPlay = false;
 }

@@ -80,10 +80,11 @@ flutter:
     - assets/images/user_icon2.png
     - assets/images/job.png
     - assets/images/logo.jpg
+    - assets/images/phone.png
     - assets/images/person.png
     - assets/images/company.png
+    - assets/images/email.png
     - assets/images/lines3.png
-    - assets/images/branding.png
     - assets/images/user_icon1.png
     - assets/images/user_icon2.png
     - assets/models/

@@ -1,3 +1,4 @@
+import 'package:ar_project/pending_activation_screen.dart';
 import 'package:ar_project/presentation/screens/win_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -43,6 +44,7 @@ class _ARGameAppState extends State<ARGameApp> {
           WinScreen.routeName: (context) => WinScreen(
             finalScore: (ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?)?['finalScore'] ?? 0,
           ),
+          PendingActivationScreen.routeName: (context) => const PendingActivationScreen(),
         },
       ),
     );

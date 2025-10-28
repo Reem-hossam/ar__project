@@ -9,12 +9,17 @@ class SignUpController {
   final TextEditingController userNameController = TextEditingController();
   final TextEditingController jobTitleController = TextEditingController();
   final TextEditingController companyNameController = TextEditingController();
+  final TextEditingController phoneNumberController = TextEditingController();
+  final TextEditingController emailController = TextEditingController();
+
   String? selectedGender;
 
   bool get isFormValid =>
       userNameController.text.isNotEmpty &&
           jobTitleController.text.isNotEmpty &&
           companyNameController.text.isNotEmpty &&
+          phoneNumberController.text.isNotEmpty &&
+          emailController.text.isNotEmpty &&
           selectedGender != null;
 
   Future<bool> registerUser() async {
@@ -23,18 +28,17 @@ class SignUpController {
       return false;
     }
 
-    for (var u in DB.usersBox.values) {
-      u.isActive = false;
-      await u.save();
-    }
 
     final newUser = User()
       ..username = userNameController.text.trim()
       ..jobTitle = jobTitleController.text.trim()
       ..company = companyNameController.text.trim()
+      ..phoneNumber = phoneNumberController.text.trim()
+      ..email = emailController.text.trim()
       ..gender = selectedGender!
       ..synced = false
-      ..isActive = true;
+      ..isActive = true
+      ..isAuthorizedToPlay = false;
 
     final connectivityResult = await Connectivity().checkConnectivity();
     final hasInternet = connectivityResult != ConnectivityResult.none;
@@ -59,5 +63,7 @@ class SignUpController {
     userNameController.dispose();
     jobTitleController.dispose();
     companyNameController.dispose();
+    phoneNumberController.dispose();
+    emailController.dispose();
   }
 }

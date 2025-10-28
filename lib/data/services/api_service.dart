@@ -5,7 +5,7 @@ import '../models/user.dart';
 import 'user_local_service.dart';
 
 class ApiService {
-  static const base = 'https://cscec-0wls.onrender.com';
+  static const base = 'https://3s4rmd3r-3000.uks1.devtunnels.ms';
 
   static Future<User?> registerUserOnServer(User user) async {
     final connection = await Connectivity().checkConnectivity();
@@ -16,12 +16,15 @@ class ApiService {
 
     try {
       final res = await http.post(
-        Uri.parse('$base/users/create'),
+        Uri.parse('$base/api/users/'),
         body: jsonEncode({
           "username": user.username,
+          "email":user.email,
           "jobTitle": user.jobTitle,
           "companyName": user.company,
-          "gender": user.gender
+          "phoneNumber": user.phoneNumber,
+          "gender": user.gender,
+
         }),
         headers: {"Content-Type": "application/json"},
       );
@@ -29,7 +32,7 @@ class ApiService {
       if (res.statusCode >= 200 && res.statusCode < 300) {
         final body = jsonDecode(res.body);
 
-        final serverId = body['user']?['_id'];
+        final serverId = body['data']?['_id'];
         user.serverId = serverId?.toString();
         user.synced = true;
 
@@ -49,9 +52,9 @@ class ApiService {
 
   static Future<bool> sendPointsUpdateToServer(String serverId, int points) async {
     try {
-      final res = await http.post(
-        Uri.parse('$base/users/addPoints/$serverId'),
-        body: jsonEncode({"points": points.toString()}),
+      final res = await http.patch(
+        Uri.parse('$base/api/users/addPoints/$serverId'),
+        body: jsonEncode({"points": points}),
         headers: {"Content-Type": "application/json"},
       );
       if (res.statusCode >= 200 && res.statusCode < 300) {
@@ -101,4 +104,26 @@ class ApiService {
       }
     }
   }
+
+  static Future<bool> fetchServerAuthorizationStatus(String serverId) async {
+    try {
+      final res = await http.get(
+        Uri.parse('$base/api/users/$serverId'),
+        headers: {"Content-Type": "application/json"},
+      );
+
+      if (res.statusCode == 200) {
+        final body = jsonDecode(res.body);
+
+        final serverStatus = body['data']['isActive'] ?? false;
+        return serverStatus;
+      }
+      print("Failed to fetch user status: ${res.statusCode}");
+      return false;
+    } catch (e) {
+      print("Error fetching user status: $e");
+      return false;
+    }
+  }
+
 }

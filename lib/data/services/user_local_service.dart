@@ -9,10 +9,24 @@ class UserLocalService {
       await u.save();
     }
 
-    user.isActive = true;
-    int id = await DB.usersBox.add(user);
+    final newUser = User()
+      ..username = user.username
+      ..jobTitle = user.jobTitle
+      ..company = user.company
+      ..phoneNumber = user.phoneNumber
+      ..email = user.email
+      ..gender = user.gender
+      ..synced = user.synced
+      ..isActive = true
+      ..isAuthorizedToPlay = user.isAuthorizedToPlay
+      ..serverId = user.serverId
+      ..points = user.points
+      ..hasCompletedGame = user.hasCompletedGame;
+
+    int id = await DB.usersBox.add(newUser);
     return id;
   }
+
 
   static Future<User?> getActiveUser() async {
     final activeUsers = DB.usersBox.values.where((u) => u.isActive);

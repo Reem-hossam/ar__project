@@ -31,7 +31,7 @@ class User extends HiveObject {
   bool hasCompletedGame = false;
 
   @HiveField(9)
-  int gameTimeRemaining = 120;
+  int gameTimeRemaining = 300;
 
   @HiveField(10)
   String? phoneNumber;

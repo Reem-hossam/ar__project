@@ -32,7 +32,7 @@ class _ARViewScreenState extends State<ARViewScreen> {
   bool showBravo = false;
   int remainingTime = 60;
   Timer? countdownTimer;
-  int gameTimeRemaining = 120;
+  int gameTimeRemaining = 300;
   Timer? gameTimer;
   User? _currentUser;
   final String characterUrl = "https://raw.githubusercontent.com/Reem-hossam/ar__project/main/assets/models/robot2.glb";

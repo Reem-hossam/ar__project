@@ -5,7 +5,7 @@ import '../models/user.dart';
 import 'user_local_service.dart';
 
 class ApiService {
-  static const base = 'https://3s4rmd3r-3000.uks1.devtunnels.ms';
+  static const base = 'https://cesec.vercel.app';
 
   static Future<User?> registerUserOnServer(User user) async {
     final connection = await Connectivity().checkConnectivity();

@@ -4,9 +4,17 @@ plugins {
     id "dev.flutter.flutter-gradle-plugin"
 }
 
+def keystoreProperties = new Properties()
+def keystorePropertiesFile = rootProject.file("key.properties")
+
+if (keystorePropertiesFile.exists()) {
+    keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
+} else {
+    println("⚠️ Warning: key.properties file not found. Using debug signing config.")
+}
 
 android {
-    namespace = "com.example.ar_project"
+    namespace = "com.cscec.app"
     compileSdk = 36
     ndkVersion = flutter.ndkVersion
 
@@ -20,23 +28,40 @@ android {
     }
 
     defaultConfig {
-        applicationId = "com.example.ar_project"
+        applicationId = "com.cscec.app"
         minSdk = 24
-        //noinspection OldTargetApi
         targetSdk = 36
         versionCode = 1
         versionName = "1.0"
     }
-
+    signingConfigs {
+        debug {
+            storeFile file("${rootDir}/debug.keystore")
+        }
+        release {
+            if (keystorePropertiesFile.exists()) {
+                keyAlias keystoreProperties['keyAlias']
+                keyPassword keystoreProperties['keyPassword']
+                storeFile keystoreProperties['storeFile'] ? file(keystoreProperties['storeFile']) : null
+                storePassword keystoreProperties['storePassword']
+            }
+        }
+    }
     buildTypes {
         release {
             shrinkResources true
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-            signingConfig = signingConfigs.debug
+
+            signingConfig keystorePropertiesFile.exists() ?
+                    signingConfigs.release : signingConfigs.debug
+        }
+        debug {
+            signingConfig signingConfigs.debug
         }
     }
 }
+
 
 flutter {
     source = "../.."
